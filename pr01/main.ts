@@ -487,6 +487,21 @@ function playProgram(
   requestAnimationFrame(animate);
 }
 
+function resizeCanvas(
+  canvas: HTMLCanvasElement,
+  gl: WebGL2RenderingContext
+): void {
+  if (
+    canvas.width == canvas.clientWidth &&
+    canvas.height == canvas.clientHeight
+  ) {
+    return;
+  }
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
+  gl.viewport(0, 0, canvas.width, canvas.height);
+}
+
 function main(): void {
   const canvas = document.getElementById("my-canvas")! as HTMLCanvasElement;
   const gl = canvas.getContext("webgl2");
@@ -495,6 +510,12 @@ function main(): void {
     alert("WebGL2 not supported on this device.");
     return;
   }
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
+
+  window.addEventListener("resize", () => {
+    resizeCanvas(canvas, gl);
+  });
 
   gl.getExtension("OES_texture_float_linear");
   gl.getExtension("OES_texture_half_float_linear");
