@@ -245,7 +245,7 @@ function main(): void {
 
   // load texture image and play
   const textureImage = new Image();
-  textureImage.src = "/pr01/blue_noise.png";
+  textureImage.src = "./blue_noise.png";
   textureImage.onload = () => {
     playProgram(gl, program, textureImage);
   };
