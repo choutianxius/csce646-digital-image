@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project 2 | Proposal</title>
+    <link rel="stylesheet" href="./index.css" />
+  </head>
+
+  <body class="h-screen">
+    <div class="h-full w-full overflow-auto">
+      <div
+        class="mx-auto min-h-screen px-4 md:px-8 lg:px-12 py-6 md:py-12 lg:py-18 bg-gray-50/50 prose lg:prose-lg max-w-none w-full sm:w-[480px] md:w-[600px] lg:w-[720px] xl:w-[960px] 2xl:w-[1024px]"
+      >
+        <h1>Team Project Proposal: <i>Black Hole</i></h1>
+
+        <div>
+          <small>
+            <i>Theron Smith, Marina Trevino, Tianxiu (Tyson) Zhou</i>
+          </small>
+          <a
+            style="margin-left: 1rem"
+            target="_blank"
+            href="https://github.com/choutianxius/csce646-digital-image"
+          >
+            <svg
+              style="display: inline-block"
+              width="15"
+              height="15"
+              viewBox="0 0 15 15"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M7.49933 0.25C3.49635 0.25 0.25 3.49593 0.25 7.50024C0.25 10.703 2.32715 13.4206 5.2081 14.3797C5.57084 14.446 5.70302 14.2222 5.70302 14.0299C5.70302 13.8576 5.69679 13.4019 5.69323 12.797C3.67661 13.235 3.25112 11.825 3.25112 11.825C2.92132 10.9874 2.44599 10.7644 2.44599 10.7644C1.78773 10.3149 2.49584 10.3238 2.49584 10.3238C3.22353 10.375 3.60629 11.0711 3.60629 11.0711C4.25298 12.1788 5.30335 11.8588 5.71638 11.6732C5.78225 11.205 5.96962 10.8854 6.17658 10.7043C4.56675 10.5209 2.87415 9.89918 2.87415 7.12104C2.87415 6.32925 3.15677 5.68257 3.62053 5.17563C3.54576 4.99226 3.29697 4.25521 3.69174 3.25691C3.69174 3.25691 4.30015 3.06196 5.68522 3.99973C6.26337 3.83906 6.8838 3.75895 7.50022 3.75583C8.1162 3.75895 8.73619 3.83906 9.31523 3.99973C10.6994 3.06196 11.3069 3.25691 11.3069 3.25691C11.7026 4.25521 11.4538 4.99226 11.3795 5.17563C11.8441 5.68257 12.1245 6.32925 12.1245 7.12104C12.1245 9.9063 10.4292 10.5192 8.81452 10.6985C9.07444 10.9224 9.30633 11.3648 9.30633 12.0413C9.30633 13.0102 9.29742 13.7922 9.29742 14.0299C9.29742 14.2239 9.42828 14.4496 9.79591 14.3788C12.6746 13.4179 14.75 10.7025 14.75 7.50024C14.75 3.49593 11.5036 0.25 7.49933 0.25Z"
+                fill="currentColor"
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+          </a>
+        </div>
+
+        <h2>Idea and Expected Results</h2>
+
+        <p>
+          We are recreating the following image in a dynamic way using lighting
+          and movement.
+          <br />
+          We will separate the background spiral from the foreground spheres to
+          create the illusion that the spheres are going into the center of the
+          spiral and that the background is rotating. We will create 3D spheres
+          to represent the orbs from the original image to enable lighting
+          changes on the orbs. We will create an array of the orbs with a slider
+          that changes the number of orbs on screen, the speed of the spiral
+          rotation, and the lighting on the orbs.
+        </p>
+
+        <img
+          alt="Preliminary image: black hole"
+          class="w-full rounded-md shadow-lg my-3 md:mb-6 lg:mb-9"
+          src="./black_hole_40.jpg"
+        />
+
+        <h2>Proposed Implementation Process</h2>
+
+        <ul>
+          <li>
+            <strong>Swirling orbs:</strong> The spiral orbits of the orbs can be
+            achieved by using a combination of cosine ans sine functions, with
+            varying orbit radius based on time. The moving speed of the orbs can
+            be adjusted by applying a scaling function on time.
+          </li>
+          <li>
+            <strong>Shrinking orbs:</strong> As the orbs approach the center,
+            their radius should decrease. This can be achieved by calculating
+            the orb radius proportional to their orbit radius.
+          </li>
+          <li>
+            <strong>Multiple orbs:</strong> We may fine-tune the entrance
+            locations of the orbs and their initial/ending sizes, so that the
+            final shader looks continuous. We may even allow the users to
+            specify how many orbs should be shown in the shader.
+          </li>
+          <li>
+            <strong>Orb image:</strong> We can separate the orbs from the
+            original preliminary image and use them as the texture of the orbs
+            in the shader.
+          </li>
+          <li>
+            <strong>Swirling background:</strong> We should be able to calculate
+            the swirling background from math, and apply texture to make it look
+            like the background in our preliminary image.
+          </li>
+          <li>
+            <strong>Lighting:</strong> We can combine the height images of the
+            orbs with the calculated height of the background, and calculate the
+            light accordingly. We may combine two light sources, one at the
+            center at the swirl, and the other dynamically set by the user's
+            mouse.
+          </li>
+        </ul>
+
+        <h2>Preliminary Shader</h2>
+
+        <p>
+          Following is a preliminary shader (<a
+            target="_blank"
+            href="./demo-shader-source.txt"
+            >ShaderToy code</a
+          >) demonstrating how we might implement the swirling effect of the
+          orbs.
+        </p>
+
+        <canvas
+          id="my-canvas"
+          class="w-full aspect-video rounded-md shadow-lg my-3 md:mb-6 lg:mb-9"
+        ></canvas>
+      </div>
+    </div>
+
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
