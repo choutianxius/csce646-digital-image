@@ -33,10 +33,31 @@ function createProgram(
   gl.deleteProgram(program);
 }
 
+const iMouse = { x: 0, y: 0, clickX: 0, clickY: 0 };
+let iSpeed_ = 5.0;
+let iTime = 0.0;
+let prevDrawTime: number | undefined = undefined;
+
+export function setIMouse(
+  x: number | null,
+  y: number | null,
+  clickX: number | null,
+  clickY: number | null
+) {
+  if (x !== null) iMouse.x = x;
+  if (y !== null) iMouse.y = y;
+  if (clickX !== null) iMouse.clickX = clickX;
+  if (clickY !== null) iMouse.clickY = clickY;
+}
+
+export function setISpeed_(speed: number) {
+  iSpeed_ = speed;
+}
+
 function playProgram(
   gl: WebGL2RenderingContext,
   program: WebGLProgram,
-  textureImages: HTMLImageElement[] = []
+  textureImages: (HTMLImageElement | null)[] = []
 ) {
   gl.useProgram(program);
   const quadPositions = new Float32Array([
@@ -49,6 +70,9 @@ function playProgram(
   // textures
   // TODO: Support images with non-power-of-two edge lengths
   textureImages.forEach((textureImage, i) => {
+    if (!textureImage) {
+      return;
+    }
     const texture = gl.createTexture();
     gl.activeTexture(gl.TEXTURE0 + i);
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -63,13 +87,10 @@ function playProgram(
     gl.generateMipmap(gl.TEXTURE_2D);
   });
 
-  let firstDrawTime: number | undefined = undefined;
-  let prevDrawTime: number | undefined = undefined;
   let iFrame: number = 0;
 
   function drawFrame(now: number) {
-    if (!(firstDrawTime || prevDrawTime)) {
-      firstDrawTime = now;
+    if (!prevDrawTime) {
       prevDrawTime = now;
       return;
     }
@@ -82,15 +103,7 @@ function playProgram(
       gl.canvas.height,
       1.0,
     ];
-    const iTimeDelta = (now - prevDrawTime!) * 0.001;
-    const iTime = (now - firstDrawTime!) * 0.001;
-    const _date = new Date(now);
-    const iDate: [number, number, number, number] = [
-      _date.getFullYear(),
-      _date.getMonth(),
-      _date.getDate(),
-      _date.getTime() * 0.001,
-    ];
+    iTime += (now - prevDrawTime!) * 0.001 * iSpeed_;
 
     function repeat(n: number, arr: any[]): any[] {
       let repeated = [];
@@ -107,7 +120,6 @@ function playProgram(
 
     gl.uniform3f(gl.getUniformLocation(program, "iResolution"), ...iResolution);
     gl.uniform1f(gl.getUniformLocation(program, "iTime"), iTime);
-    gl.uniform1f(gl.getUniformLocation(program, "iTimeDelta"), iTimeDelta);
     gl.uniform1f(gl.getUniformLocation(program, "iFrameRate"), 60.0);
     gl.uniform1i(gl.getUniformLocation(program, "iFrame"), iFrame);
     gl.uniform1fv(gl.getUniformLocation(program, "iChannelTime"), iChannelTime);
@@ -119,7 +131,13 @@ function playProgram(
     gl.uniform1i(gl.getUniformLocation(program, "iChannel1"), 1);
     gl.uniform1i(gl.getUniformLocation(program, "iChannel2"), 2);
     gl.uniform1i(gl.getUniformLocation(program, "iChannel3"), 3);
-    gl.uniform4f(gl.getUniformLocation(program, "iDate"), ...iDate);
+    gl.uniform4f(
+      gl.getUniformLocation(program, "iMouse"),
+      iMouse.x,
+      iMouse.y,
+      iMouse.clickX,
+      iMouse.clickY
+    );
 
     // draw
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -163,7 +181,7 @@ function resizeCanvas(
 export function renderShaderToy(
   canvas: HTMLCanvasElement,
   mainImageSource: string,
-  textureImages: HTMLImageElement[] = []
+  textureImages: (HTMLImageElement | null)[] = []
 ): void {
   const gl = canvas.getContext("webgl2");
 
@@ -203,7 +221,6 @@ export function renderShaderToy(
   #define texture2D texture
   uniform vec3 iResolution;
   uniform float iTime;
-  uniform float iTimeDelta;
   uniform float iFrameRate;
   uniform int iFrame;
   uniform float iChannelTime[4];
@@ -212,7 +229,7 @@ export function renderShaderToy(
   uniform sampler2D iChannel1;
   uniform sampler2D iChannel2;
   uniform sampler2D iChannel3;
-  uniform vec4 iDate;
+  uniform vec4 iMouse;
   out vec4 frag_out_color;
   void mainImage( out vec4 fragColor, in vec2 fragCoord );
   void main( void )
